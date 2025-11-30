@@ -88,7 +88,7 @@ p.description {
 <body>
 
 <h1>AnaLingo ▶ dodela jezika 🎵🎧</h1>
-<p class="description">Unesi svoj nick sa foruma i dobićeš jezik!</p>
+<p class="description">Unesi svoj nick sa foruma i dobićeš jezik svog predloga za AnaLingo!</p>
 
 <div id="assignForm">
   <input type="text" id="username" placeholder="Unesi svoj nick 💜">
@@ -103,19 +103,19 @@ function assignLanguage() {
   const result = document.getElementById("result");
 
   if (!username) {
-    result.textContent = "Unesi nick!";
+    result.textContent = "Unesi nick 💜";
     result.className = "error";
     return;
   }
 
-  // očisti prethodni rezultat
+  
   result.textContent = "Loading...";
   result.className = "";
 
-  // Generiši jedinstveno ime za callback kako bi izbegao konflikte
+  
   const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
 
-  // Definiši callback
+  
   window[cbName] = function(data) {
     try {
       if (data.error) {
@@ -133,7 +133,7 @@ function assignLanguage() {
       result.textContent = "Nešto nije u redu sa odgovorom servera.";
       result.className = "error";
     } finally {
-      // cleanup: ukloni script tag i callback
+      
       setTimeout(() => {
         if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
         try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
@@ -141,7 +141,7 @@ function assignLanguage() {
     }
   };
 
-  // Kreiraj script tag
+  
   const scriptEl = document.createElement("script");
   const base = "https://script.google.com/macros/s/AKfycbxRzbkZC0VL5fpH0XBaZ8f_0yDXChl9YypIIEpJUm-y8M7v2yC0XmbdvpeCUOaP-R0ung/exec";
   scriptEl.src = base + "?username=" + encodeURIComponent(username) + "&callback=" + cbName;
@@ -162,6 +162,7 @@ function assignLanguage() {
 
 </body>
 </html>
+
 
 
 
