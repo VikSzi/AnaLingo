@@ -59,22 +59,27 @@ async function assignLanguage() {
         return;
     }
 
+    const formData = new FormData();
+    formData.append("username", username);
+
     try {
         const res = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username })
+            body: formData
         });
         const data = await res.json();
-        document.getElementById("result").textContent = data.assigned ? "Tvoj jezik: " + data.assigned : data.error;
+        document.getElementById("result").textContent =
+            data.assigned ? "Tvoj jezik: " + data.assigned : data.error;
     } catch (err) {
         document.getElementById("result").textContent = "Greška u konekciji. Pokušaj ponovo.";
     }
 }
+
 </script>
 
 </body>
 </html>
+
 
 
 
