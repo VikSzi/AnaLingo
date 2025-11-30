@@ -143,7 +143,7 @@ function assignLanguage() {
 
   
   const scriptEl = document.createElement("script");
-  const base = "https://script.google.com/macros/s/AKfycbxRzbkZC0VL5fpH0XBaZ8f_0yDXChl9YypIIEpJUm-y8M7v2yC0XmbdvpeCUOaP-R0ung/exec";
+  const base = "https://script.google.com/macros/s/AKfycbySg7XKXWRfk8TTT40TL8X0001gYWdKFjFaEsRox6uZmyEblQlP0MTBS63k59VDg5zZ2g/exec";
   scriptEl.src = base + "?username=" + encodeURIComponent(username) + "&callback=" + cbName;
   scriptEl.onerror = function(err){
     console.error("Script tag load error:", err);
@@ -162,6 +162,7 @@ function assignLanguage() {
 
 </body>
 </html>
+
 
 
 
