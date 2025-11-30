@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
 <meta charset="UTF-8">
 <title>AnaLingo 🎵</title>
@@ -73,7 +73,7 @@ p.description {
   font-size: 1.3rem;
   font-weight: 600;
   color: #333;
-  min-height: 1.5em; /* rezerviše prostor ispod forme */
+  min-height: 1.5em; 
 }
 
 #result.assigned {
@@ -98,40 +98,41 @@ p.description {
 <p id="result"></p>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwO4q6BDpQOZJ_XkoZ0Hw1foJ024NoevBIn93RP7v2YpbJ_6l8Anx8k2wzhtdjyH_92Sg/exec"; 
-
 async function assignLanguage() {
   const username = document.getElementById("username").value.trim();
-  const resultEl = document.getElementById("result");
-  resultEl.textContent = "";
-  resultEl.className = "";
+  const result = document.getElementById("result");
 
   if (!username) {
-    resultEl.textContent = "Unesi nick sa foruma 💜";
-    resultEl.classList.add("error");
+    result.textContent = "Unesi nick!";
+    result.className = "error";
     return;
   }
 
-  try {
-    const res = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`);
-    if (!res.ok) throw new Error("Network response was not ok");
-    const data = await res.json();
+  const url = "https://script.google.com/macros/s/AKfycbwO4q6BDpQOZJ_XkoZ0Hw1foJ024NoevBIn93RP7v2YpbJ_6l8Anx8k2wzhtdjyH_92Sg/exec?username=" + encodeURIComponent(username);
 
-    if (data.assigned) {
-      resultEl.textContent = "Tvoj jezik: " + data.assigned;
-      resultEl.classList.add("assigned");
-    } else {
-      resultEl.textContent = data.error || "Došlo je do greške.";
-      resultEl.classList.add("error");
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.error) {
+      result.textContent = data.error;
+      result.className = "error";
+    } 
+    else if (data.assigned && data.message) {
+      result.textContent = data.message + " — " + data.assigned;
+      result.className = "assigned";
+    } 
+    else {
+      result.textContent = "Dodeljen ti je jezik: " + data.assigned;
+      result.className = "assigned";
     }
-  } catch (err) {
-    console.error(err);
-    resultEl.textContent = "Greška u konekciji. Pokušaj ponovo.";
-    resultEl.classList.add("error");
+
+  } catch (e) {
+    result.textContent = "Greška u komunikaciji sa serverom.";
+    result.className = "error";
   }
 }
 </script>
 
 </body>
 </html>
-
