@@ -2,41 +2,136 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AnaLingo JSONP</title>
+<title>AnaLingo 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f0ff, #ffe5f0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  min-height: 100vh;
+  margin: 0;
+  padding: 60px 20px;
+}
+
+h1 {
+  color: #7e1389;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+p.description {
+  color: #333;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+#assignForm {
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+#assignForm input {
+  padding: 12px;
+  font-size: 18px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+#assignForm input:focus {
+  border-color: #7e1389;
+}
+
+#assignForm button {
+  padding: 12px 30px;
+  font-size: 18px;
+  background-color: #7e1389;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#assignForm button:hover {
+  background-color: #38063f;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  min-height: 1.5em; /* rezerviše prostor ispod forme */
+}
+
+#result.assigned {
+  color: #007700;
+}
+
+#result.error {
+  color: #cc0000;
+}
+</style>
 </head>
 <body>
 
-<h1>Dodela jezika</h1>
-<input type="text" id="username" placeholder="Unesi nick">
-<button onclick="assignLanguage()">Dodeli jezik</button>
+<h1>AnaLingo ▶ dodela jezika 🎵🎧</h1>
+<p class="description">Unesi svoj nick sa foruma i dobićeš jezik!</p>
+
+<div id="assignForm">
+  <input type="text" id="username" placeholder="Unesi svoj nick 💜">
+  <button onclick="assignLanguage()">Dodeli jezik</button>
+</div>
+
 <p id="result"></p>
 
 <script>
-function assignLanguage() {
+const API_URL = "https://script.google.com/macros/s/AKfycbwO4q6BDpQOZJ_XkoZ0Hw1foJ024NoevBIn93RP7v2YpbJ_6l8Anx8k2wzhtdjyH_92Sg/exec"; 
+
+async function assignLanguage() {
   const username = document.getElementById("username").value.trim();
-  if(!username){ 
-    document.getElementById("result").innerText="Unesi nick!";
+  const resultEl = document.getElementById("result");
+  resultEl.textContent = "";
+  resultEl.className = "";
+
+  if (!username) {
+    resultEl.textContent = "Unesi nick sa foruma 💜";
+    resultEl.classList.add("error");
     return;
   }
 
-  // Kreira script tag za JSONP
-  const script = document.createElement("script");
-  const callbackName = "handleResult";
-  script.src = `https://script.google.com/macros/s/AKfycbzPaPNdou8ul4rRwEA-lqUmB8rNbsU_XFjH6AUdGS9sypNAUN0sLCOhUsQ7xdkwMrTMMQ/exec?username=${encodeURIComponent(username)}&callback=${callbackName}`;
-  document.body.appendChild(script);
-  script.remove(); // uklanja script tag nakon izvršenja
-}
+  try {
+    const res = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`);
+    if (!res.ok) throw new Error("Network response was not ok");
+    const data = await res.json();
 
-// Funkcija koja prima odgovor sa GAS-a
-function handleResult(data){
-  const resultEl = document.getElementById("result");
-  if(data.assigned){
-    resultEl.innerText = "Tvoj jezik: " + data.assigned;
-  } else {
-    resultEl.innerText = data.error || "Došlo je do greške";
+    if (data.assigned) {
+      resultEl.textContent = "Tvoj jezik: " + data.assigned;
+      resultEl.classList.add("assigned");
+    } else {
+      resultEl.textContent = data.error || "Došlo je do greške.";
+      resultEl.classList.add("error");
+    }
+  } catch (err) {
+    console.error(err);
+    resultEl.textContent = "Greška u konekciji. Pokušaj ponovo.";
+    resultEl.classList.add("error");
   }
 }
 </script>
 
 </body>
 </html>
+
