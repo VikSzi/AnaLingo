@@ -35,12 +35,10 @@ p.description {
   background-color: #fff;
   padding: 30px 40px;
   border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
   gap: 15px;
   align-items: center;
-  position: relative; /* div je statičan */
 }
 
 #assignForm input {
@@ -64,7 +62,6 @@ p.description {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
 #assignForm button:hover {
@@ -76,7 +73,7 @@ p.description {
   font-size: 1.3rem;
   font-weight: 600;
   color: #333;
-  min-height: 1.5em; 
+  min-height: 1.5em; /* rezerviše prostor ispod forme */
 }
 
 #result.assigned {
@@ -101,7 +98,7 @@ p.description {
 <p id="result"></p>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbydwWAXZcfbfL2COw2V9V9-r_1l4OPMyOpsb7JWD5EAZCJhl5V2moDkwm8if-lunYQZXA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbydwWAXZcfbfL2COw2V9V9-r_1l4OPMyOpsb7JWD5EAZCJhl5V2moDkwm8if-lunYQZXA/exec"; 
 
 async function assignLanguage() {
   const username = document.getElementById("username").value.trim();
@@ -121,7 +118,7 @@ async function assignLanguage() {
     const data = await res.json();
 
     if (data.assigned) {
-      resultEl.textContent = "Tvoj jezik: " + data.assigned + " 🎉";
+      resultEl.textContent = "Tvoj jezik: " + data.assigned;
       resultEl.classList.add("assigned");
     } else {
       resultEl.textContent = data.error || "Došlo je do greške.";
