@@ -90,11 +90,11 @@
     }
 
     #result.assigned {
-        color: #007700;
+        color: #333;
     }
 
     #result.error {
-        color: #cc0000;
+        color: #333;
     }
 </style>
 </head>
@@ -126,7 +126,12 @@ async function assignLanguage() {
     }
 
     try {
-        const res = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`);
+        const res = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`, {
+            method: "GET"
+        });
+
+        if (!res.ok) throw new Error("Network response was not ok");
+
         const data = await res.json();
 
         if (data.assigned) {
@@ -137,6 +142,7 @@ async function assignLanguage() {
             resultEl.classList.add("error");
         }
     } catch (err) {
+        console.error(err);
         resultEl.textContent = "Greška u konekciji. Pokušaj ponovo.";
         resultEl.classList.add("error");
     }
@@ -145,3 +151,4 @@ async function assignLanguage() {
 
 </body>
 </html>
+
