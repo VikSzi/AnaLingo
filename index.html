@@ -1,176 +1,131 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
-  <meta charset="UTF-8">
-  <title>AnaLingo 🎵</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f0ff, #ffe5f0);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: start;
-      min-height: 100vh;
-      margin: 0;
-      padding: 60px 20px;
-    }
-
-    h1 {
-      color: #7e1389;
-      font-size: 2.5rem;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    p.description {
-      color: #333;
-      font-size: 1.1rem;
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    #assignForm {
-      background-color: #fff;
-      padding: 30px 40px;
-      border-radius: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-    }
-
-    #assignForm input {
-      padding: 12px;
-      font-size: 18px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      outline: none;
-    }
-
-    #assignForm input:focus {
-      border-color: #7e1389;
-    }
-
-    #assignForm button {
-      padding: 12px 30px;
-      font-size: 18px;
-      background-color: #7e1389;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #assignForm button:hover {
-      background-color: #38063f;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #333;
-      min-height: 1.5em;
-      text-align: center;
-    }
-
-    #result.assigned {
-      color: #007700;
-    }
-
-    #result.error {
-      color: #7e1389;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>AnaLingo 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#f5f0ff,#ffe5f0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  margin:0;
+}
+h1 {color:#7e1389; font-size:2.5rem; text-align:center; margin-bottom:20px;}
+p.description {text-align:center; margin-bottom:30px; color:#333;}
+#assignForm, #adminBox {background:#fff; padding:25px; border-radius:12px; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px; max-width:400px;}
+#assignForm input, #adminBox input {padding:10px; font-size:16px; width:80%; border:1px solid #ccc; border-radius:6px; outline:none;}
+#assignForm button, #adminBox button {padding:10px 25px; font-size:16px; background:#7e1389; color:white; border:none; border-radius:6px; cursor:pointer;}
+#assignForm button:hover, #adminBox button:hover {background:#38063f;}
+#result {margin-top:15px; font-weight:600; min-height:1.5em; text-align:center;}
+#result.assigned{color:#007700;}
+#result.error{color:#7e1389;}
+#adminPanel {display:none; margin-top:20px; max-width:600px;}
+table {width:100%; border-collapse:collapse; margin-top:10px;}
+th, td {border-bottom:1px solid #ddd; padding:8px; text-align:left;}
+th {background:#f7e8ff; color:#7e1389;}
+#errorAdmin {color:red; font-weight:600; margin-top:5px;}
+</style>
 </head>
-
 <body>
 
-  <h1>AnaLingo ▶ dodela jezika 🎵🎧</h1>
-  <p class="description">
-    Unesi svoj nick sa foruma i dobićeš jezik svog predloga za AnaLingo!🔮
-  </p>
+<h1>AnaLingo ▶ dodela jezika 🎵🎧</h1>
+<p class="description">Unesi svoj nick sa foruma i dobićeš jezik svog predloga! 🔮</p>
 
-  <div id="assignForm">
-    <input type="text" id="username" placeholder="Unesi svoj nick 💜">
-    <button onclick="assignLanguage()">Dodeli jezik</button>
-  </div>
-
+<div id="assignForm">
+  <input type="text" id="username" placeholder="Unesi svoj nick 💜">
+  <button onclick="assignLanguage()">Dodeli jezik</button>
   <p id="result"></p>
+</div>
 
-  <script>
-    function assignLanguage() {
-      const username = document.getElementById("username").value.trim();
-      const result = document.getElementById("result");
+<hr style="width:80%; margin:20px 0; border:0; border-top:1px solid #ccc;">
 
-      if (!username) {
-        result.textContent = "Unesi nick 💜";
-        result.className = "error";
-        return;
+<div id="adminBox">
+  <p>Admin login:</p>
+  <input type="password" id="adminPass" placeholder="Šifra">
+  <button onclick="adminLogin()">Login</button>
+  <p id="errorAdmin"></p>
+</div>
+
+<div id="adminPanel">
+  <h3>Lista korisnika i dodeljenih jezika</h3>
+  <table id="assignedTable">
+    <thead><tr><th>Korisnik</th><th>Jezik</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>Preostali jezici</h3>
+  <table id="langTable">
+    <thead><tr><th>Jezik</th><th>Preostalo</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const scriptBase = "https://script.google.com/macros/s/AKfycby9hEjKXI_jaItdIapikvXcvH5JzruaI2bo6Qef1NKEigLPujWH7-0LAEn3mUrkvuf20w/exec"; // exec URL
+
+function assignLanguage(){
+  const username = document.getElementById("username").value.trim();
+  const result = document.getElementById("result");
+  if(!username){result.textContent="Unesi nick 💜"; result.className="error"; return;}
+  result.textContent="Loading..."; result.className="";
+
+  const cb = "cb_"+Date.now()+"_"+Math.floor(Math.random()*1000);
+  window[cb]=function(data){
+    try{
+      if(data.error){result.textContent=data.error; result.className="error";}
+      else if(data.assigned && data.message){result.textContent=data.message; result.className="assigned";}
+      else{result.textContent="Dodeljen ti je jezik: "+data.assigned; result.className="assigned";}
+    }catch(e){console.error(e); result.textContent="Greška sa serverom"; result.className="error";}
+    finally{setTimeout(()=>{if(scriptEl)scriptEl.remove(); delete window[cb];},50);}
+  };
+
+  const scriptEl = document.createElement("script");
+  scriptEl.src = scriptBase + "?username="+encodeURIComponent(username)+"&callback="+cb;
+  scriptEl.onerror=function(){result.textContent="Greška u komunikaciji"; result.className="error"; scriptEl.remove(); delete window[cb];};
+  document.body.appendChild(scriptEl);
+}
+
+function adminLogin(){
+  const pass = document.getElementById("adminPass").value.trim();
+  const error = document.getElementById("errorAdmin");
+  if(!pass){error.textContent="Moraš da uneseš šifru 💜"; return;}
+
+  const cb="cb_"+Date.now();
+  window[cb]=function(data){
+    if(data.error){error.textContent=data.error;}
+    else{
+      document.getElementById("adminBox").style.display="none";
+      const panel=document.getElementById("adminPanel");
+      panel.style.display="block";
+
+      const assignTbody=document.querySelector("#assignedTable tbody");
+      assignTbody.innerHTML="";
+      for(let user in data.assigned){
+        const tr=document.createElement("tr");
+        tr.innerHTML="<td>"+user+"</td><td>"+data.assigned[user]+"</td>";
+        assignTbody.appendChild(tr);
       }
 
-      result.textContent = "Loading...";
-      result.className = "";
-
-      const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-
-      window[cbName] = function (data) {
-        try {
-          if (data.error) {
-            result.textContent = data.error;
-            result.className = "error";
-          } else if (data.assigned && data.message) {
-            result.textContent = data.message;
-            result.className = "assigned";
-          } else {
-            result.textContent = "Dodeljen ti je jezik: " + data.assigned;
-            result.className = "assigned";
-          }
-        } catch (e) {
-          console.error("Callback handling error:", e);
-          result.textContent = "Nešto nije u redu sa odgovorom servera.";
-          result.className = "error";
-        } finally {
-          setTimeout(() => {
-            if (scriptEl && scriptEl.parentNode) {
-              scriptEl.parentNode.removeChild(scriptEl);
-            }
-            try {
-              delete window[cbName];
-            } catch (e) {
-              window[cbName] = undefined;
-            }
-          }, 100);
-        }
-      };
-
-      const scriptEl = document.createElement("script");
-      const base = "https://script.google.com/macros/s/AKfycbw3Zi52KmMEbEsqSpjk6rDrwFexTPj_aeHLptFqSXlwE-mrS8sojSwJWVTxLjCl1NRoog/exec";
-
-      scriptEl.src = base + "?username=" + encodeURIComponent(username) + "&callback=" + cbName;
-
-      scriptEl.onerror = function (err) {
-        console.error("Script tag load error:", err);
-        result.textContent = "Greška u komunikaciji sa serverom (network).";
-        result.className = "error";
-
-        if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
-        try {
-          delete window[cbName];
-        } catch (e) {
-          window[cbName] = undefined;
-        }
-      };
-
-      document.body.appendChild(scriptEl);
+      const langTbody=document.querySelector("#langTable tbody");
+      langTbody.innerHTML="";
+      for(let lang in data.languages){
+        const tr=document.createElement("tr");
+        tr.innerHTML="<td>"+lang+"</td><td>"+data.languages[lang]+"</td>";
+        langTbody.appendChild(tr);
+      }
     }
-  </script>
+    delete window[cb];
+  };
+
+  const scriptEl=document.createElement("script");
+  scriptEl.src=scriptBase+"?admin=1&password="+encodeURIComponent(pass)+"&callback="+cb;
+  document.body.appendChild(scriptEl);
+}
+</script>
 
 </body>
 </html>
-
