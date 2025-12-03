@@ -76,7 +76,7 @@ function assignLanguage(attempt = 1) {
   };
 
   const scriptEl = document.createElement("script");
-  const base = "https://script.google.com/macros/s/AKfycbymoRVfrONRAqmG03cx7KzDrg7zw-3UXhFZHYcXGdCvakXBuaqk2OlgZwPWCZuSBh5nSA/exec"; // 
+  const base = "https://script.google.com/macros/s/AKfycbxH90O-YbkvPy_Czbp3HpXdG3g_AotVq8U42_FDLt8N1fwovpkSzB8ZK17hsnFUvxTsTw/exec"; // 
   scriptEl.src = base + "?username=" + encodeURIComponent(username) + "&callback=" + cbName;
 
   scriptEl.onerror = function() {
@@ -102,5 +102,6 @@ function assignLanguage(attempt = 1) {
 
 </body>
 </html>
+
 
 
