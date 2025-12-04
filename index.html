@@ -15,6 +15,9 @@ button:hover { background:#38063f; }
 #result, #adminResult { margin-top:10px; min-height:1.2em; text-align:center; font-weight:600; }
 #result.assigned { color:#007700; }
 #result.error { color:#7e1389; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background-color: #f2e5ff; color: #7e1389; }
 </style>
 </head>
 <body>
@@ -38,7 +41,7 @@ button:hover { background:#38063f; }
 </div>
 
 <script>
-const BASE_URL = "https://script.google.com/macros/s/AKfycbw7hZc3nHSReqrjTAh08d_nUd7g3LWDXWw5m1UvKF0Vm500Pqp0qE-dz4ZXthA1_mVF7g/exec";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbzaHPrmU_69SbxxYaMDG2mSYGShXmy1X0LzslYaDV5NvqMHQBeDf42UZY5ROsRpppaOTw/exec";
 
 // USER
 function assignLanguage(){
@@ -68,8 +71,21 @@ function loadAdmin(){
   window[cb] = function(data){
     if(data.error){ adminResult.textContent=data.error; }
     else{
-      const list = Object.entries(data.assigned).map(([k,v])=>k+" → "+v).join("<br>");
-      adminResult.innerHTML = list || "Još niko nije dobio jezik 💜";
+      let html = "<h3>Dodeljeni jezici:</h3>";
+      html += "<table><tr><th>Korisnik</th><th>Jezik</th></tr>";
+      for(const [user, lang] of Object.entries(data.assigned)){
+        html += `<tr><td>${user}</td><td>${lang}</td></tr>`;
+      }
+      html += "</table>";
+
+      html += "<h3>Preostali jezici:</h3>";
+      html += "<table><tr><th>Jezik</th><th>Preostalo</th></tr>";
+      for(const [lang, count] of Object.entries(data.languages)){
+        html += `<tr><td>${lang}</td><td>${count}</td></tr>`;
+      }
+      html += "</table>";
+
+      adminResult.innerHTML = html || "Još niko nije dobio jezik 💜";
     }
     delete window[cb];
   };
@@ -80,7 +96,7 @@ function loadAdmin(){
 
 function resetLanguages(){
   const pw = document.getElementById("adminPassword").value.trim();
-  if(!pw){ alert("Unesi lozinku 💜"); return; }
+  if(!pw){ alert("Unesi lozinku"); return; }
   const cb = "cb_"+Date.now()+"_"+Math.floor(Math.random()*1000);
   window[cb] = function(data){
     if(data.error){ alert(data.error); }
@@ -88,7 +104,7 @@ function resetLanguages(){
     delete window[cb];
   };
   const s = document.createElement("script");
-  s.src = BASE_URL+"?reset=true&adminPassword="+encodeURIComponent(pw)+"&callback="+cb;
+  s.src = BASE_URL+"?reset=true&admin=true&adminPassword="+encodeURIComponent(pw)+"&callback="+cb;
   document.body.appendChild(s);
 }
 </script>
